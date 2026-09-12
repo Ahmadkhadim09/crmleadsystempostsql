@@ -269,34 +269,34 @@ export function RecordsClient({
     return (
         <div className="flex-1 flex flex-col overflow-hidden h-full bg-white">
             {/* Main Toolbar */}
-            <header className="bg-white border-b border-gray-200/60 h-16 flex-none flex items-center justify-between px-6 z-10 shrink-0">
-                <div className="flex items-center space-x-4 max-w-sm w-full">
-                    <form onSubmit={handleSearch} className="flex-1 relative group">
+            <header className="bg-white border-b border-gray-200/60 py-3 md:h-16 flex-none flex flex-col md:flex-row md:items-center justify-between px-4 md:px-6 z-10 shrink-0 gap-3">
+                <div className="flex items-center w-full md:max-w-sm">
+                    <form onSubmit={handleSearch} className="flex-1 relative group w-full">
                         <Search className="w-4 h-4 text-gray-400 absolute left-3 top-2.5 group-hover:text-gray-500 transition-colors" />
                         <Input
                             type="text"
                             placeholder="Search records..."
                             value={searchInput}
                             onChange={(e) => setSearchInput(e.target.value)}
-                            className="w-full bg-gray-50 border-transparent hover:border-gray-300 focus:bg-white pl-9 h-9 transition-all text-sm rounded-lg"
+                            className="w-full bg-gray-50 border-transparent hover:border-gray-300 focus:bg-white pl-9 h-9 transition-all text-sm rounded-lg shadow-sm md:shadow-none"
                         />
                         {/* Hidden submit to handle enter */}
                         <button type="submit" className="hidden" disabled={isPending}>Search</button>
                     </form>
                 </div>
 
-                <div className="flex items-center space-x-3">
+                <div className="flex flex-wrap items-center gap-2">
                     <Button variant="outline" size="sm" className="h-9 px-3 text-gray-600 border-gray-200 hover:bg-gray-50" onClick={() => setIsFilterOpen(true)}>
                         <Filter className="w-4 h-4 mr-2 text-gray-400" />
                         Filters {parsedFilters.length > 0 && <span className="ml-1.5 flex h-4 w-4 items-center justify-center rounded-full bg-gray-200 text-[10px] font-bold text-gray-800">{parsedFilters.length}</span>}
                     </Button>
                     <Link href={`/workspaces/${workspaceId}/settings`}>
-                        <Button variant="outline" size="sm" className="h-9 px-3 text-gray-600 border-gray-200 hover:bg-gray-50">
+                        <Button variant="outline" size="sm" className="h-9 px-3 text-gray-600 border-gray-200 hover:bg-gray-50 hidden sm:flex">
                             <Settings2 className="w-4 h-4 mr-2 text-gray-400" />
                             Columns
                         </Button>
                     </Link>
-                    <Button size="sm" className="h-9 px-4 ml-2 shadow-sm" onClick={() => handleOpenDialog()}>
+                    <Button size="sm" className="h-9 px-4 shadow-sm flex-1 sm:flex-none" onClick={() => handleOpenDialog()}>
                         <Plus className="w-4 h-4 mr-1.5" /> New Record
                     </Button>
                 </div>

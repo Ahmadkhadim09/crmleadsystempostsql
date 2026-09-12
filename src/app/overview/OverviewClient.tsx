@@ -44,14 +44,14 @@ export function OverviewClient({
 
     return (
         <div className="flex-1 flex flex-col overflow-hidden h-full bg-white">
-            <header className="bg-white border-b border-gray-200/60 h-16 flex flex-none items-center px-8 shrink-0 relative z-20">
-                <h1 className="text-xl font-semibold text-gray-900 tracking-tight">Company Overview</h1>
+            <header className="bg-white border-b border-gray-200/60 h-14 md:h-16 flex flex-none items-center px-4 pl-14 md:px-8 shrink-0 relative z-20">
+                <h1 className="text-lg md:text-xl font-semibold text-gray-900 tracking-tight">Company Overview</h1>
             </header>
 
-            <main className="flex-1 overflow-y-auto p-8 relative isolate bg-gray-50/30">
-                <div className="max-w-6xl mx-auto space-y-8">
+            <main className="flex-1 overflow-y-auto p-4 md:p-8 relative isolate bg-gray-50/30">
+                <div className="max-w-6xl mx-auto space-y-6 md:space-y-8">
                     {/* Metric Cards */}
-                    <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                         <div className="bg-white p-5 rounded-xl border border-gray-200 shadow-sm flex flex-col justify-between">
                             <div className="flex items-center justify-between mb-4">
                                 <h3 className="text-sm font-medium text-gray-500">Total Employees</h3>
