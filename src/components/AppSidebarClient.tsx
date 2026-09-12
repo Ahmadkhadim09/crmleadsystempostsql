@@ -9,6 +9,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogD
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { LayoutDashboard, Briefcase, Plus, Grip } from "lucide-react";
 
 export function AppSidebarClient({
     allEmployees,
@@ -33,7 +34,6 @@ export function AppSidebarClient({
     const switchEmployee = (empId: string) => {
         startTransition(async () => {
             await setEmployeeCookie(empId);
-            // After switching employee, redirect to overview
             router.push("/overview");
         });
     };
@@ -57,58 +57,73 @@ export function AppSidebarClient({
     };
 
     return (
-        <div className="w-64 bg-white border-r border-gray-200 flex flex-col justify-between shrink-0">
+        <div className="w-64 bg-gray-50/40 border-r border-gray-200 flex flex-col justify-between shrink-0">
             <div className="flex flex-col h-full">
-                <div className="p-4 border-b border-gray-100 flex items-center justify-between">
-                    <Link href="/">
-                        <h2 className="font-bold text-xl text-gray-800 tracking-tight">CRM</h2>
+                <div className="h-16 flex items-center px-6 shrink-0 border-b border-transparent">
+                    <Link href="/" className="flex items-center space-x-2">
+                        <div className="w-7 h-7 bg-gray-900 rounded-md flex items-center justify-center">
+                            <Grip className="w-4 h-4 text-white" />
+                        </div>
+                        <h2 className="font-bold text-lg text-gray-900 tracking-tight">CRM Desk</h2>
                     </Link>
                 </div>
 
-                <div className="p-4 flex-1 overflow-y-auto space-y-6">
+                <div className="p-4 flex-1 overflow-y-auto space-y-8">
                     {/* Navigation */}
                     <div className="space-y-1">
-                        <Link href="/overview" className={`block px-3 py-2 text-sm font-medium rounded-md transition-colors ${isOverview ? 'text-blue-700 bg-blue-50' : 'text-gray-600 hover:bg-gray-100'
+                        <Link href="/overview" className={`flex items-center px-3 py-2 text-sm font-medium rounded-md transition-colors ${isOverview
+                                ? 'text-gray-900 bg-gray-200/50'
+                                : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'
                             }`}>
+                            <LayoutDashboard className="w-4 h-4 mr-3 text-gray-500" />
                             Company Overview
                         </Link>
                     </div>
 
-                    {/* Employee Switcher */}
-                    <div className="space-y-2">
-                        <Label className="text-xs text-gray-500 font-semibold px-1">CURRENT EMPLOYEE (DEV)</Label>
-                        <Select value={currentEmployeeId} onValueChange={(v) => switchEmployee(v || "")} disabled={isPending}>
-                            <SelectTrigger className="h-8 text-sm">
-                                <SelectValue placeholder="Select Employee" />
-                            </SelectTrigger>
-                            <SelectContent>
-                                {allEmployees.map(e => (
-                                    <SelectItem key={e.id} value={e.id}>{e.name}</SelectItem>
-                                ))}
-                            </SelectContent>
-                        </Select>
-                    </div>
+                    <div className="space-y-4">
+                        {/* Workspaces */}
+                        <div className="space-y-1">
+                            <div className="flex items-center justify-between px-3 pb-1">
+                                <Label className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Workspaces</Label>
+                                <button className="text-gray-400 hover:text-gray-900 transition-colors" onClick={() => setIsCreating(true)}>
+                                    <Plus className="w-4 h-4" />
+                                </button>
+                            </div>
 
-                    {/* Workspaces */}
-                    <div className="space-y-2">
-                        <div className="flex items-center justify-between px-1">
-                            <Label className="text-xs text-gray-500 font-semibold">MY WORKSPACES</Label>
-                            <button className="text-xs text-blue-600 hover:underline" onClick={() => setIsCreating(true)}>+ New</button>
+                            {myWorkspaces.length === 0 ? (
+                                <p className="text-xs text-gray-400 px-3 italic">No workspaces yet.</p>
+                            ) : (
+                                <nav className="space-y-1">
+                                    {myWorkspaces.map(ws => (
+                                        <Link key={ws.id} href={`/workspaces/${ws.id}`} className={`flex items-center px-3 py-2 text-sm font-medium rounded-md transition-colors ${activeWorkspaceId === ws.id
+                                                ? 'text-gray-900 bg-gray-200/50'
+                                                : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'
+                                            }`}>
+                                            <Briefcase className={`w-4 h-4 mr-3 ${activeWorkspaceId === ws.id ? 'text-gray-900' : 'text-gray-400'}`} />
+                                            <span className="truncate">{ws.name}</span>
+                                        </Link>
+                                    ))}
+                                </nav>
+                            )}
                         </div>
-
-                        {myWorkspaces.length === 0 ? (
-                            <p className="text-xs text-gray-400 px-1 italic">No workspaces yet.</p>
-                        ) : (
-                            <nav className="space-y-1">
-                                {myWorkspaces.map(ws => (
-                                    <Link key={ws.id} href={`/workspaces/${ws.id}`} className={`block px-3 py-2 text-sm font-medium rounded-md transition-colors ${activeWorkspaceId === ws.id ? 'text-blue-700 bg-blue-50' : 'text-gray-600 hover:bg-gray-50'
-                                        }`}>
-                                        <div className="truncate w-full">{ws.name}</div>
-                                    </Link>
-                                ))}
-                            </nav>
-                        )}
                     </div>
+                </div>
+            </div>
+
+            {/* Employee Switcher (Footer) */}
+            <div className="p-4 border-t border-gray-200/60 bg-white">
+                <div className="space-y-2">
+                    <Label className="text-xs text-gray-500 font-semibold px-1 uppercase tracking-wider">Active Profile</Label>
+                    <Select value={currentEmployeeId} onValueChange={(v) => switchEmployee(v || "")} disabled={isPending}>
+                        <SelectTrigger className="h-9 text-sm bg-gray-50/50 border-gray-200">
+                            <SelectValue placeholder="Select Employee" />
+                        </SelectTrigger>
+                        <SelectContent>
+                            {allEmployees.map(e => (
+                                <SelectItem key={e.id} value={e.id}>{e.name}</SelectItem>
+                            ))}
+                        </SelectContent>
+                    </Select>
                 </div>
             </div>
 
