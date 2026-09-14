@@ -286,3 +286,84 @@ export async function deleteRecord(id: string, workspaceId: string) {
         return { success: false, error: error.message || "Failed to delete record" };
     }
 }
+
+export async function validateBulkRecords(payload: { workspaceId: string, records: any[] }) {
+    try {
+        const fields = await prisma.fieldDefinition.findMany({ where: { workspaceId: payload.workspaceId } });
+
+        const results = [];
+        for (const [index, data] of payload.records.entries()) {
+            const { errors, validatedData } = validateDataAgainstFields(data, fields);
+            let status: "Valid" | "Warning" | "Error" = "Valid";
+            const rowErrors = { ...errors };
+            let warning = null;
+
+            if (Object.keys(errors).length > 0) {
+                status = "Error";
+            } else {
+                const dupMatch = await checkForDuplicates(payload.workspaceId, validatedData, fields);
+                if (dupMatch) {
+                    status = "Warning";
+                    warning = `Possible duplicate match for ${dupMatch.duplicateField} (${dupMatch.duplicateValue})`;
+                }
+            }
+
+            results.push({
+                index,
+                status,
+                errors: rowErrors,
+                warning,
+                validatedData
+            });
+        }
+        return { success: true, results };
+    } catch (error: any) {
+        return { success: false, error: error.message || "Bulk validation failed" };
+    }
+}
+
+export async function bulkCreateRecords(payload: { workspaceId: string, records: any[] }) {
+    try {
+        const fields = await prisma.fieldDefinition.findMany({ where: { workspaceId: payload.workspaceId } });
+        const currentEmployeeId = await getCurrentEmployeeId();
+
+        let createdCount = 0;
+        let errorCount = 0;
+        let skippedCount = 0;
+
+        for (const data of payload.records) {
+            const { errors, validatedData } = validateDataAgainstFields(data, fields);
+            if (Object.keys(errors).length > 0) {
+                errorCount++;
+                continue;
+            }
+
+            try {
+                const record = await prisma.record.create({
+                    data: {
+                        workspaceId: payload.workspaceId,
+                        createdById: currentEmployeeId,
+                        updatedById: currentEmployeeId,
+                        data: validatedData
+                    }
+                });
+
+                await prisma.activityLog.create({
+                    data: {
+                        recordId: record.id,
+                        employeeId: currentEmployeeId,
+                        action: "CREATE"
+                    }
+                });
+                createdCount++;
+            } catch (error) {
+                errorCount++;
+            }
+        }
+
+        revalidatePath(`/workspaces/${payload.workspaceId}`);
+        return { success: true, createdCount, errorCount, skippedCount };
+    } catch (error: any) {
+        return { success: false, error: error.message || "Bulk creation failed" };
+    }
+}

@@ -11,7 +11,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Checkbox } from "@/components/ui/checkbox";
 import { createRecord, updateRecord, deleteRecord } from "@/app/actions/records";
 import { ParsedFilter, FilterOperator } from "@/lib/record-utils";
-import { Search, Filter, Settings2, Plus, Pencil, Trash2, X, FileText, ChevronLeft, ChevronRight, ArrowDown, ArrowUp, Info } from "lucide-react";
+import { Search, Filter, Settings2, Plus, Pencil, Trash2, X, FileText, ChevronLeft, ChevronRight, ArrowDown, ArrowUp, Info, ClipboardPaste } from "lucide-react";
+import { BulkImportDialog } from "./bulk-import-dialog";
 
 interface RecordsClientProps {
     workspaceId: string;
@@ -39,6 +40,7 @@ export function RecordsClient({
 
     // Dialog state for Save/Edit
     const [isDialogOpen, setIsDialogOpen] = useState(false);
+    const [isBulkImportOpen, setIsBulkImportOpen] = useState(false);
     const [editingRecordId, setEditingRecordId] = useState<string | null>(null);
     const [formData, setFormData] = useState<Record<string, any>>({});
     const [formErrors, setFormErrors] = useState<Record<string, string>>({});
@@ -279,9 +281,10 @@ export function RecordsClient({
                             value={searchInput}
                             onChange={(e) => setSearchInput(e.target.value)}
                             className="w-full bg-gray-50 border-transparent hover:border-gray-300 focus:bg-white pl-9 h-9 transition-all text-sm rounded-lg shadow-sm md:shadow-none"
+                            suppressHydrationWarning
                         />
                         {/* Hidden submit to handle enter */}
-                        <button type="submit" className="hidden" disabled={isPending}>Search</button>
+                        <button type="submit" className="hidden" disabled={isPending} suppressHydrationWarning>Search</button>
                     </form>
                 </div>
 
@@ -296,6 +299,10 @@ export function RecordsClient({
                             Columns
                         </Button>
                     </Link>
+                    <Button variant="outline" size="sm" className="h-9 px-3 text-gray-600 border-gray-200 hover:bg-gray-50 hidden sm:flex" onClick={() => setIsBulkImportOpen(true)}>
+                        <ClipboardPaste className="w-4 h-4 mr-1.5 text-gray-400" />
+                        Bulk Paste / Import
+                    </Button>
                     <Button size="sm" className="h-9 px-4 shadow-sm flex-1 sm:flex-none" onClick={() => handleOpenDialog()}>
                         <Plus className="w-4 h-4 mr-1.5" /> New Record
                     </Button>
@@ -581,6 +588,12 @@ export function RecordsClient({
                     </DialogFooter>
                 </DialogContent>
             </Dialog>
+            <BulkImportDialog
+                workspaceId={workspaceId}
+                fields={fields}
+                isOpen={isBulkImportOpen}
+                onClose={() => setIsBulkImportOpen(false)}
+            />
         </div>
     );
 }

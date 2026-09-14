@@ -15,7 +15,43 @@ export default async function WorkspacePage(props: { params: Promise<{ workspace
         }
     });
 
-    const fields = workspace?.fields || [];
+    let fields = workspace?.fields || [];
+
+    // ENFORCE DEFAULT FIELDS
+    if (workspace) {
+        const fieldNames = new Set(fields.map(f => f.name.toLowerCase()));
+        let needsRefresh = false;
+        const defaultFields = [
+            { name: "Name", type: "TEXT", isRequired: true },
+            { name: "Company", type: "TEXT", isRequired: false },
+            { name: "Email", type: "EMAIL", isRequired: false },
+            { name: "Phone Number", type: "PHONE", isRequired: false }
+        ];
+
+        let currentOrder = fields.length;
+        for (const df of defaultFields) {
+            if (!fieldNames.has(df.name.toLowerCase())) {
+                await prisma.fieldDefinition.create({
+                    data: {
+                        workspaceId,
+                        name: df.name,
+                        type: df.type,
+                        isRequired: df.isRequired,
+                        order: currentOrder++
+                    }
+                });
+                needsRefresh = true;
+            }
+        }
+
+        if (needsRefresh) {
+            const refreshedWorkspace = await prisma.workspace.findUnique({
+                where: { id: workspaceId },
+                include: { fields: { orderBy: { order: 'asc' } } }
+            });
+            fields = refreshedWorkspace?.fields || [];
+        }
+    }
 
     // Extract standard params
     const globalSearch = typeof searchParams.search === 'string' ? searchParams.search : '';

@@ -54,7 +54,15 @@ export async function createWorkspace(data: { name: string, employeeId?: string 
         const workspace = await prisma.workspace.create({
             data: {
                 name: parsed.data.name,
-                employeeId: employeeId
+                employeeId: employeeId,
+                fields: {
+                    create: [
+                        { name: "Name", type: "TEXT", isRequired: true, order: 0 },
+                        { name: "Company", type: "TEXT", isRequired: false, order: 1 },
+                        { name: "Email", type: "EMAIL", isRequired: false, order: 2 },
+                        { name: "Phone Number", type: "PHONE", isRequired: false, order: 3 },
+                    ]
+                }
             }
         });
         revalidatePath("/overview");
