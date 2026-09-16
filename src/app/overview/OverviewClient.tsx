@@ -43,81 +43,81 @@ export function OverviewClient({
     });
 
     return (
-        <div className="flex-1 flex flex-col overflow-hidden h-full bg-white">
-            <header className="bg-white border-b border-gray-200/60 h-14 md:h-16 flex flex-none items-center px-4 pl-14 md:px-8 shrink-0 relative z-20">
-                <h1 className="text-lg md:text-xl font-semibold text-gray-900 tracking-tight">Company Overview</h1>
+        <div className="flex-1 flex flex-col overflow-hidden h-full bg-slate-50/50">
+            <header className="bg-white border-b border-slate-200 h-14 md:h-16 flex flex-none items-center px-4 pl-14 md:px-8 shrink-0 relative z-20">
+                <h1 className="text-lg md:text-xl font-bold text-slate-900 tracking-tight">Company Overview</h1>
             </header>
 
-            <main className="flex-1 overflow-y-auto p-4 md:p-8 relative isolate bg-gray-50/30">
+            <main className="flex-1 overflow-y-auto p-4 md:p-8 relative isolate bg-slate-50/50">
                 <div className="max-w-6xl mx-auto space-y-6 md:space-y-8">
                     {/* Metric Cards */}
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                        <div className="bg-white p-5 rounded-xl border border-gray-200 shadow-sm flex flex-col justify-between">
+                        <div className="bg-white p-5 rounded-xl border border-slate-200 shadow-sm flex flex-col justify-between">
                             <div className="flex items-center justify-between mb-4">
-                                <h3 className="text-sm font-medium text-gray-500">Total Employees</h3>
-                                <div className="p-2 bg-gray-50 rounded-md">
-                                    <Users className="w-4 h-4 text-gray-600" />
+                                <h3 className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Total Employees</h3>
+                                <div className="p-2 bg-blue-50 text-blue-600 rounded-lg">
+                                    <Users className="w-4 h-4" />
                                 </div>
                             </div>
-                            <p className="text-3xl font-semibold text-gray-900">{summary.totalEmployees || 0}</p>
+                            <p className="text-3xl font-bold text-slate-900">{summary.totalEmployees || 0}</p>
                         </div>
-                        <div className="bg-white p-5 rounded-xl border border-gray-200 shadow-sm flex flex-col justify-between">
+                        <div className="bg-white p-5 rounded-xl border border-slate-200 shadow-sm flex flex-col justify-between">
                             <div className="flex items-center justify-between mb-4">
-                                <h3 className="text-sm font-medium text-gray-500">Total Workspaces</h3>
-                                <div className="p-2 bg-gray-50 rounded-md">
-                                    <Briefcase className="w-4 h-4 text-gray-600" />
+                                <h3 className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Total Workspaces</h3>
+                                <div className="p-2 bg-blue-50 text-blue-600 rounded-lg">
+                                    <Briefcase className="w-4 h-4" />
                                 </div>
                             </div>
-                            <p className="text-3xl font-semibold text-gray-900">{summary.totalWorkspaces || 0}</p>
+                            <p className="text-3xl font-bold text-slate-900">{summary.totalWorkspaces || 0}</p>
                         </div>
-                        <div className="bg-white p-5 rounded-xl border border-gray-200 shadow-sm flex flex-col justify-between">
+                        <div className="bg-white p-5 rounded-xl border border-slate-200 shadow-sm flex flex-col justify-between">
                             <div className="flex items-center justify-between mb-4">
-                                <h3 className="text-sm font-medium text-gray-500">Total Records</h3>
-                                <div className="p-2 bg-gray-50 rounded-md">
-                                    <Database className="w-4 h-4 text-gray-600" />
+                                <h3 className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Total Records</h3>
+                                <div className="p-2 bg-blue-50 text-blue-600 rounded-lg">
+                                    <Database className="w-4 h-4" />
                                 </div>
                             </div>
-                            <p className="text-3xl font-semibold text-gray-900">{summary.totalRecords || 0}</p>
+                            <p className="text-3xl font-bold text-slate-900">{summary.totalRecords || 0}</p>
                         </div>
-                        <div className="bg-white p-5 rounded-xl border border-gray-200 shadow-sm flex flex-col justify-between">
+                        <div className="bg-white p-5 rounded-xl border border-slate-200 shadow-sm flex flex-col justify-between">
                             <div className="flex items-center justify-between mb-4">
-                                <h3 className="text-sm font-medium text-gray-500">Total Activities</h3>
-                                <div className="p-2 bg-gray-50 rounded-md">
-                                    <Activity className="w-4 h-4 text-gray-600" />
+                                <h3 className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Total Activities</h3>
+                                <div className="p-2 bg-blue-50 text-blue-600 rounded-lg">
+                                    <Activity className="w-4 h-4" />
                                 </div>
                             </div>
-                            <p className="text-3xl font-semibold text-gray-900">{summary.totalActivity || 0}</p>
+                            <p className="text-3xl font-bold text-slate-900">{summary.totalActivity || 0}</p>
                         </div>
                     </div>
 
                     <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                         {/* Workspaces List (Takes 2 columns on large screens) */}
                         <div className="lg:col-span-2 space-y-4">
-                            <h2 className="text-lg font-medium text-gray-900">Active Workspaces</h2>
+                            <h2 className="text-base font-bold text-slate-900">Active Workspaces</h2>
 
-                            <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
+                            <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
                                 {workspaces.length === 0 ? (
                                     <div className="p-12 text-center flex flex-col items-center">
-                                        <div className="w-12 h-12 bg-gray-50 rounded-full flex items-center justify-center mb-4 border border-gray-100">
-                                            <Briefcase className="w-5 h-5 text-gray-400" />
+                                        <div className="w-12 h-12 bg-slate-50 rounded-full flex items-center justify-center mb-4 border border-slate-100">
+                                            <Briefcase className="w-5 h-5 text-slate-400" />
                                         </div>
-                                        <h3 className="text-sm font-medium text-gray-900 mb-1">No workspaces yet</h3>
-                                        <p className="text-sm text-gray-500 max-w-sm">Create an employee profile to get started with your first workspace and begin managing records.</p>
+                                        <h3 className="text-sm font-medium text-slate-900 mb-1">No workspaces yet</h3>
+                                        <p className="text-sm text-slate-500 max-w-sm">Create an employee profile to get started with your first workspace and begin managing records.</p>
                                     </div>
                                 ) : (
                                     <div className="overflow-x-auto">
                                         <table className="min-w-full text-left text-sm whitespace-nowrap">
-                                            <thead className="bg-gray-50/50 border-b border-gray-200">
+                                            <thead className="bg-slate-50 border-b border-slate-200">
                                                 <tr>
-                                                    <th className="px-6 py-3 font-semibold text-gray-500 text-xs uppercase tracking-wider">Employee</th>
-                                                    <th className="px-6 py-3 font-semibold text-gray-500 text-xs uppercase tracking-wider">Workspace</th>
-                                                    <th className="px-6 py-3 font-semibold text-gray-500 text-xs uppercase tracking-wider">Metrics</th>
-                                                    <th className="px-6 py-3 font-semibold text-gray-500 text-xs uppercase tracking-wider flex justify-end">Actions</th>
+                                                    <th className="px-6 py-3 font-semibold text-slate-500 text-xs uppercase tracking-wider">Employee</th>
+                                                    <th className="px-6 py-3 font-semibold text-slate-500 text-xs uppercase tracking-wider">Workspace</th>
+                                                    <th className="px-6 py-3 font-semibold text-slate-500 text-xs uppercase tracking-wider">Metrics</th>
+                                                    <th className="px-6 py-3 font-semibold text-slate-500 text-xs uppercase tracking-wider flex justify-end">Actions</th>
                                                 </tr>
                                             </thead>
-                                            <tbody className="divide-y divide-gray-100">
+                                            <tbody className="divide-y divide-slate-100">
                                                 {workspaces.map((ws) => (
-                                                    <tr key={ws.id} className="hover:bg-gray-50/50 transition-colors group">
+                                                    <tr key={ws.id} className="hover:bg-slate-50/70 transition-colors group">
                                                         <td className="px-6 py-4">
                                                             <div className="flex items-center space-x-3">
                                                                 <div className="w-8 h-8 rounded-full bg-gray-100 text-gray-600 flex items-center justify-center font-semibold text-xs border border-gray-200">

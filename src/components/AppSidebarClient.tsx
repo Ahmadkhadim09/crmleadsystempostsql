@@ -89,36 +89,36 @@ export function AppSidebarClient({
             {/* Sidebar Wrapper */}
             <div className={`
                 fixed md:relative inset-y-0 left-0 z-50 transform transition-transform duration-300 ease-in-out
-                w-72 md:w-64 bg-white md:bg-gray-50/40 border-r border-gray-200 flex flex-col justify-between shrink-0
+                w-72 md:w-64 bg-slate-50 border-r border-slate-200 flex flex-col justify-between shrink-0
                 ${isMobileMenuOpen ? 'translate-x-0 shadow-2xl' : '-translate-x-full md:translate-x-0'}
             `}>
                 {/* Close Button Mobile */}
                 <button
                     onClick={() => setIsMobileMenuOpen(false)}
-                    className="md:hidden absolute top-3 right-3 flex items-center justify-center w-10 h-10 rounded-md text-gray-400 hover:text-gray-900 bg-gray-50 hover:bg-gray-100 focus:outline-none"
+                    className="md:hidden absolute top-3 right-3 flex items-center justify-center w-10 h-10 rounded-md text-slate-400 hover:text-slate-900 bg-slate-100 hover:bg-slate-200 focus:outline-none"
                     aria-label="Close Menu"
                 >
                     <X className="w-5 h-5" />
                 </button>
 
                 <div className="flex flex-col h-full">
-                    <div className="h-16 flex items-center px-6 shrink-0 border-b border-transparent">
-                        <Link href="/" className="flex items-center space-x-2">
-                            <div className="w-7 h-7 bg-gray-900 rounded-md flex items-center justify-center">
+                    <div className="h-16 flex items-center px-6 shrink-0 border-b border-slate-200/60">
+                        <Link href="/" className="flex items-center space-x-2.5">
+                            <div className="w-7 h-7 bg-blue-600 rounded-md flex items-center justify-center shadow-sm">
                                 <Grip className="w-4 h-4 text-white" />
                             </div>
-                            <h2 className="font-bold text-lg text-gray-900 tracking-tight">CRM Desk</h2>
+                            <h2 className="font-bold text-lg text-slate-900 tracking-tight">CRM Desk</h2>
                         </Link>
                     </div>
 
                     <div className="p-4 flex-1 overflow-y-auto space-y-8">
                         {/* Navigation */}
                         <div className="space-y-1">
-                            <Link href="/overview" className={`flex items-center px-3 py-2 text-sm font-medium rounded-md transition-colors ${isOverview
-                                ? 'text-gray-900 bg-gray-200/50'
-                                : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'
+                            <Link href="/overview" className={`flex items-center px-3 py-2 text-sm font-medium rounded-lg transition-colors ${isOverview
+                                ? 'text-blue-700 bg-blue-50/80 font-semibold'
+                                : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'
                                 }`}>
-                                <LayoutDashboard className="w-4 h-4 mr-3 text-gray-500" />
+                                <LayoutDashboard className={`w-4 h-4 mr-3 ${isOverview ? 'text-blue-600' : 'text-slate-500'}`} />
                                 Company Overview
                             </Link>
                         </div>
@@ -127,22 +127,22 @@ export function AppSidebarClient({
                             {/* Workspaces */}
                             <div className="space-y-1">
                                 <div className="flex items-center justify-between px-3 pb-1">
-                                    <Label className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Workspaces</Label>
-                                    <button className="text-gray-400 hover:text-gray-900 transition-colors" onClick={() => setIsCreating(true)}>
+                                    <Label className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Workspaces</Label>
+                                    <button className="text-slate-400 hover:text-blue-600 transition-colors" onClick={() => setIsCreating(true)} title="Create Workspace">
                                         <Plus className="w-4 h-4" />
                                     </button>
                                 </div>
 
                                 {myWorkspaces.length === 0 ? (
-                                    <p className="text-xs text-gray-400 px-3 italic">No workspaces yet.</p>
+                                    <p className="text-xs text-slate-400 px-3 italic">No workspaces yet.</p>
                                 ) : (
                                     <nav className="space-y-1">
                                         {myWorkspaces.map(ws => (
-                                            <Link key={ws.id} href={`/workspaces/${ws.id}`} className={`flex items-center px-3 py-2 text-sm font-medium rounded-md transition-colors ${activeWorkspaceId === ws.id
-                                                ? 'text-gray-900 bg-gray-200/50'
-                                                : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'
+                                            <Link key={ws.id} href={`/workspaces/${ws.id}`} className={`flex items-center px-3 py-2 text-sm font-medium rounded-lg transition-colors ${activeWorkspaceId === ws.id
+                                                ? 'text-blue-700 bg-blue-50/80 font-semibold'
+                                                : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'
                                                 }`}>
-                                                <Briefcase className={`w-4 h-4 mr-3 ${activeWorkspaceId === ws.id ? 'text-gray-900' : 'text-gray-400'}`} />
+                                                <Briefcase className={`w-4 h-4 mr-3 ${activeWorkspaceId === ws.id ? 'text-blue-600' : 'text-slate-400'}`} />
                                                 <span className="truncate">{ws.name}</span>
                                             </Link>
                                         ))}
