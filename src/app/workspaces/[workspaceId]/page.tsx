@@ -118,7 +118,7 @@ export default async function WorkspacePage(props: { params: Promise<{ workspace
                         </p>
                         <div className="pt-4 flex justify-center">
                             <Link href={`/workspaces/${workspaceId}/settings`}>
-                                <Button>Set Up Fields</Button>
+                                <Button className="bg-[#534AB7] hover:bg-[#7F77DD] text-white font-medium">Set Up Fields</Button>
                             </Link>
                         </div>
                     </div>

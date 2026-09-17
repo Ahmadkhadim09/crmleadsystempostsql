@@ -6,7 +6,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, Di
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useRouter } from "next/navigation";
-import { createWorkspace, setEmployeeCookie } from "@/app/actions/workspaces";
+import { createWorkspace } from "@/app/actions/workspaces";
 import { User, Briefcase, Plus, ChevronDown, ChevronUp, Folder } from "lucide-react";
 
 type Workspace = {
@@ -31,8 +31,7 @@ export function EmployeeListClient({ employees }: { employees: Employee[] }) {
     const [expandedEmpId, setExpandedEmpId] = useState<string | null>(null);
 
     const handleOpenWorkspace = (empId: string, wsId: string) => {
-        startTransition(async () => {
-            await setEmployeeCookie(empId);
+        startTransition(() => {
             router.push(`/workspaces/${wsId}`);
         });
     };
@@ -44,11 +43,10 @@ export function EmployeeListClient({ employees }: { employees: Employee[] }) {
         }
         setCreateError("");
         startTransition(async () => {
-            const res = await createWorkspace({ name: newWsName, employeeId: empId });
+            const res = await createWorkspace({ name: newWsName });
             if (res.success && res.workspaceId) {
                 setCreatingForEmpId(null);
                 setNewWsName("");
-                await setEmployeeCookie(empId);
                 router.push(`/workspaces/${res.workspaceId}`);
             } else {
                 setCreateError(res.error || "Failed to create workspace");

@@ -277,7 +277,7 @@ export function RecordsClient({
                             placeholder="Search records..."
                             value={searchInput}
                             onChange={(e) => setSearchInput(e.target.value)}
-                            className="w-full bg-slate-50 border border-slate-200 hover:border-slate-300 focus:border-blue-600 focus:bg-white pl-9 h-9 transition-all text-sm rounded-lg shadow-sm text-slate-900 placeholder:text-slate-400"
+                            className="w-full bg-slate-50 border border-slate-200 hover:border-slate-300 focus:border-[#534AB7] focus:bg-white pl-9 h-9 transition-all text-sm rounded-lg shadow-sm text-slate-900 placeholder:text-slate-400"
                             suppressHydrationWarning
                         />
                         <button type="submit" className="hidden" disabled={isPending} suppressHydrationWarning>Search</button>
@@ -287,7 +287,7 @@ export function RecordsClient({
                 <div className="flex flex-wrap items-center gap-2">
                     <Button variant="outline" size="sm" className="h-9 px-3 text-slate-700 border-slate-200 hover:bg-slate-50" onClick={() => setIsFilterOpen(true)}>
                         <Filter className="w-4 h-4 mr-2 text-slate-400" />
-                        Filters {parsedFilters.length > 0 && <span className="ml-1.5 flex h-4 w-4 items-center justify-center rounded-full bg-blue-100 text-[10px] font-bold text-blue-700">{parsedFilters.length}</span>}
+                        Filters {parsedFilters.length > 0 && <span className="ml-1.5 flex h-4 w-4 items-center justify-center rounded-full bg-[#EEEDFE] text-[10px] font-bold text-[#3C3489]">{parsedFilters.length}</span>}
                     </Button>
                     <Link href={`/workspaces/${workspaceId}/settings`}>
                         <Button variant="outline" size="sm" className="h-9 px-3 text-slate-700 border-slate-200 hover:bg-slate-50 hidden sm:flex">
@@ -299,7 +299,7 @@ export function RecordsClient({
                         <ClipboardPaste className="w-4 h-4 mr-1.5 text-slate-400" />
                         Bulk Paste / Import
                     </Button>
-                    <Button size="sm" className="h-9 px-4 shadow-sm flex-1 sm:flex-none bg-blue-600 hover:bg-blue-700 text-white font-medium" onClick={() => gridRef.current?.addDraftRow()}>
+                    <Button size="sm" className="h-9 px-4 shadow-sm flex-1 sm:flex-none bg-[#534AB7] hover:bg-[#7F77DD] text-white font-medium" onClick={() => gridRef.current?.addDraftRow()}>
                         <Plus className="w-4 h-4 mr-1.5" /> New Record
                     </Button>
                 </div>
@@ -311,7 +311,7 @@ export function RecordsClient({
                     <span className="text-[11px] font-semibold text-slate-400 mr-1 uppercase tracking-wider">Filters</span>
                     {parsedFilters.map((pf, i) => (
                         <div key={i} className="inline-flex items-center border border-slate-200 bg-white rounded-md px-2.5 py-1 text-xs shadow-sm text-slate-700">
-                            <span className="font-semibold text-blue-700 mr-1.5">{pf.fieldName}</span>
+                            <span className="font-semibold text-[#3C3489] mr-1.5">{pf.fieldName}</span>
                             <span className="text-slate-400 mr-1.5">
                                 {pf.operator === 'contains' ? 'contains' : pf.operator === 'eq' ? '=' : pf.operator}
                             </span>

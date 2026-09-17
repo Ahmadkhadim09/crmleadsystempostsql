@@ -4,7 +4,7 @@ import { z } from "zod";
 import prisma from "@/lib/prisma";
 import { Prisma } from "@prisma/client";
 import { revalidatePath } from "next/cache";
-import { getCurrentEmployeeId } from "./workspaces";
+import { requireWorkspaceAccess } from "@/lib/auth";
 
 const RecordPayloadSchema = z.object({
     workspaceId: z.string().min(1),
@@ -103,7 +103,7 @@ function validateDataAgainstFields(data: any, fields: any[]) {
         }
 
         if (value !== undefined && value !== null && value !== "") {
-            // Type validation could be enhanced here (e.g., checking if email is valid)
+            // Type validation
             if (field.type === "EMAIL") {
                 const schema = z.string().email();
                 const res = schema.safeParse(value);
@@ -138,47 +138,31 @@ export async function createRecord(payload: { workspaceId: string, data: any, ig
 
     const { workspaceId, data, ignoreDuplicates } = result.data;
 
-    const fields = await prisma.fieldDefinition.findMany({
-        where: { workspaceId }
-    });
-
-    const { errors, validatedData } = validateDataAgainstFields(data, fields);
-
-    if (Object.keys(errors).length > 0) {
-        return { success: false, error: "Validation failed", validationErrors: errors };
-    }
-
-    if (!ignoreDuplicates) {
-        const dupMatch = await checkForDuplicates(workspaceId, validatedData, fields);
-        if (dupMatch) {
-            return { success: false, isDuplicate: true, duplicateField: dupMatch.duplicateField, duplicateValue: dupMatch.duplicateValue };
-        }
-    }
-
-    // Ensure workspace exists (like fields.ts does)
-    await prisma.workspace.upsert({
-        where: { id: workspaceId },
-        create: {
-            id: workspaceId,
-            name: workspaceId.charAt(0).toUpperCase() + workspaceId.slice(1),
-            employee: {
-                connectOrCreate: {
-                    where: { id: "default_employee" },
-                    create: { id: "default_employee", name: "Default Employee" }
-                }
-            }
-        },
-        update: {}
-    });
-
     try {
-        const currentEmployeeId = await getCurrentEmployeeId();
+        const session = await requireWorkspaceAccess(workspaceId);
+
+        const fields = await prisma.fieldDefinition.findMany({
+            where: { workspaceId }
+        });
+
+        const { errors, validatedData } = validateDataAgainstFields(data, fields);
+
+        if (Object.keys(errors).length > 0) {
+            return { success: false, error: "Validation failed", validationErrors: errors };
+        }
+
+        if (!ignoreDuplicates) {
+            const dupMatch = await checkForDuplicates(workspaceId, validatedData, fields);
+            if (dupMatch) {
+                return { success: false, isDuplicate: true, duplicateField: dupMatch.duplicateField, duplicateValue: dupMatch.duplicateValue };
+            }
+        }
 
         const record = await prisma.record.create({
             data: {
                 workspaceId,
-                createdById: currentEmployeeId,
-                updatedById: currentEmployeeId,
+                createdById: session.employeeId,
+                updatedById: session.employeeId,
                 data: validatedData
             }
         });
@@ -186,7 +170,7 @@ export async function createRecord(payload: { workspaceId: string, data: any, ig
         await prisma.activityLog.create({
             data: {
                 recordId: record.id,
-                employeeId: currentEmployeeId,
+                employeeId: session.employeeId,
                 action: "CREATE"
             }
         });
@@ -206,51 +190,51 @@ export async function updateRecord(payload: { id: string, workspaceId: string, d
 
     const { id, workspaceId, data, ignoreDuplicates } = result.data;
 
-    // Verify record exists and belongs to workspace
-    const existingRecord = await prisma.record.findUnique({
-        where: { id }
-    });
-
-    if (!existingRecord) {
-        return { success: false, error: "Record not found" };
-    }
-
-    if (existingRecord.workspaceId !== workspaceId) {
-        return { success: false, error: "Unauthorized: Record does not belong to this workspace" };
-    }
-
-    const fields = await prisma.fieldDefinition.findMany({
-        where: { workspaceId }
-    });
-
-    const { errors, validatedData } = validateDataAgainstFields(data, fields);
-
-    if (Object.keys(errors).length > 0) {
-        return { success: false, error: "Validation failed", validationErrors: errors };
-    }
-
-    if (!ignoreDuplicates) {
-        const dupMatch = await checkForDuplicates(workspaceId, validatedData, fields, id);
-        if (dupMatch) {
-            return { success: false, isDuplicate: true, duplicateField: dupMatch.duplicateField, duplicateValue: dupMatch.duplicateValue };
-        }
-    }
-
     try {
-        const currentEmployeeId = await getCurrentEmployeeId();
+        const session = await requireWorkspaceAccess(workspaceId);
+
+        // Verify record exists and belongs to workspace
+        const existingRecord = await prisma.record.findUnique({
+            where: { id }
+        });
+
+        if (!existingRecord) {
+            return { success: false, error: "Record not found" };
+        }
+
+        if (existingRecord.workspaceId !== workspaceId) {
+            return { success: false, error: "Unauthorized: Record does not belong to this workspace" };
+        }
+
+        const fields = await prisma.fieldDefinition.findMany({
+            where: { workspaceId }
+        });
+
+        const { errors, validatedData } = validateDataAgainstFields(data, fields);
+
+        if (Object.keys(errors).length > 0) {
+            return { success: false, error: "Validation failed", validationErrors: errors };
+        }
+
+        if (!ignoreDuplicates) {
+            const dupMatch = await checkForDuplicates(workspaceId, validatedData, fields, id);
+            if (dupMatch) {
+                return { success: false, isDuplicate: true, duplicateField: dupMatch.duplicateField, duplicateValue: dupMatch.duplicateValue };
+            }
+        }
 
         const record = await prisma.record.update({
             where: { id },
             data: {
                 data: validatedData,
-                updatedById: currentEmployeeId
+                updatedById: session.employeeId
             }
         });
 
         await prisma.activityLog.create({
             data: {
                 recordId: record.id,
-                employeeId: currentEmployeeId,
+                employeeId: session.employeeId,
                 action: "UPDATE"
             }
         });
@@ -264,6 +248,8 @@ export async function updateRecord(payload: { id: string, workspaceId: string, d
 
 export async function deleteRecord(id: string, workspaceId: string) {
     try {
+        await requireWorkspaceAccess(workspaceId);
+
         const existingRecord = await prisma.record.findUnique({
             where: { id }
         });
@@ -289,6 +275,7 @@ export async function deleteRecord(id: string, workspaceId: string) {
 
 export async function validateBulkRecords(payload: { workspaceId: string, records: any[] }) {
     try {
+        await requireWorkspaceAccess(payload.workspaceId);
         const fields = await prisma.fieldDefinition.findMany({ where: { workspaceId: payload.workspaceId } });
 
         const results = [];
@@ -324,8 +311,8 @@ export async function validateBulkRecords(payload: { workspaceId: string, record
 
 export async function bulkCreateRecords(payload: { workspaceId: string, records: any[] }) {
     try {
+        const session = await requireWorkspaceAccess(payload.workspaceId);
         const fields = await prisma.fieldDefinition.findMany({ where: { workspaceId: payload.workspaceId } });
-        const currentEmployeeId = await getCurrentEmployeeId();
 
         let createdCount = 0;
         let errorCount = 0;
@@ -342,8 +329,8 @@ export async function bulkCreateRecords(payload: { workspaceId: string, records:
                 const record = await prisma.record.create({
                     data: {
                         workspaceId: payload.workspaceId,
-                        createdById: currentEmployeeId,
-                        updatedById: currentEmployeeId,
+                        createdById: session.employeeId,
+                        updatedById: session.employeeId,
                         data: validatedData
                     }
                 });
@@ -351,7 +338,7 @@ export async function bulkCreateRecords(payload: { workspaceId: string, records:
                 await prisma.activityLog.create({
                     data: {
                         recordId: record.id,
-                        employeeId: currentEmployeeId,
+                        employeeId: session.employeeId,
                         action: "CREATE"
                     }
                 });

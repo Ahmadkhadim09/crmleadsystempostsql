@@ -70,7 +70,7 @@ function MultiSelectCellEditor({ options, selected, onChange, onClose }: { optio
             <button
                 type="button"
                 onClick={() => setOpen(!open)}
-                className="w-full text-xs h-7 px-1.5 bg-white border border-blue-500 rounded text-left flex items-center justify-between truncate"
+                className="w-full text-xs h-7 px-1.5 bg-white border border-[#534AB7] rounded text-left flex items-center justify-between truncate"
             >
                 <span className="truncate">
                     {selected.length > 0 ? selected.join(", ") : <span className="text-gray-400">Select options...</span>}
@@ -641,7 +641,7 @@ export const SpreadsheetGrid = forwardRef<SpreadsheetGridHandle, SpreadsheetGrid
                         <Input
                             ref={inputRef as any}
                             type={field.type === "NUMBER" ? "number" : field.type === "EMAIL" ? "email" : field.type === "DATE" ? "date" : field.type === "URL" ? "url" : field.type === "PHONE" ? "tel" : "text"}
-                            className="h-7 text-xs px-1.5 bg-white border-2 border-blue-600 focus-visible:ring-0 rounded-none w-full font-sans text-slate-900"
+                            className="h-7 text-xs px-1.5 bg-white border-2 border-[#534AB7] focus-visible:ring-0 rounded-none w-full font-sans text-slate-900"
                             value={editValue !== undefined && editValue !== null ? editValue : ""}
                             onChange={(e) => setEditValue(e.target.value)}
                             onKeyDown={(e) => {
@@ -685,7 +685,7 @@ export const SpreadsheetGrid = forwardRef<SpreadsheetGridHandle, SpreadsheetGrid
                 <span className={`truncate ${!displayStr ? 'text-slate-400 italic' : 'text-slate-800'}`}>
                     {displayStr || (isSelected ? "" : "-")}
                 </span>
-                {isSaving && <span title="Saving..." className="shrink-0 ml-1"><Loader2 className="w-3 h-3 text-blue-600 animate-spin" /></span>}
+                {isSaving && <span title="Saving..." className="shrink-0 ml-1"><Loader2 className="w-3 h-3 text-[#534AB7] animate-spin" /></span>}
                 {isRecentlySaved && <span title="Saved" className="shrink-0 ml-1"><Check className="w-3.5 h-3.5 text-emerald-600 animate-in fade-in" /></span>}
                 {errorMsg && <span title={errorMsg} className="shrink-0 ml-1"><AlertCircle className="w-3.5 h-3.5 text-rose-500" /></span>}
             </div>
@@ -703,7 +703,7 @@ export const SpreadsheetGrid = forwardRef<SpreadsheetGridHandle, SpreadsheetGrid
             {/* Grid Header Controls */}
             <div className="px-4 py-2 bg-slate-50 border-b border-slate-200 flex items-center justify-between text-xs text-slate-500 shrink-0">
                 <div className="flex items-center space-x-3">
-                    <span className="font-semibold text-slate-700">Google Sheets Grid View</span>
+                    <span className="font-semibold text-slate-700">Spreadsheet Workspace Grid</span>
                     <span className="text-slate-300">|</span>
                     <span>Auto-saves on Tab / Enter / Blur</span>
                     <span>• Sticky 2D Scrolling</span>
@@ -712,7 +712,7 @@ export const SpreadsheetGrid = forwardRef<SpreadsheetGridHandle, SpreadsheetGrid
                     <Button variant="outline" size="sm" className="h-7 text-xs border-slate-200 hover:bg-slate-100 text-slate-700" onClick={onBulkImportOpen}>
                         Bulk Paste Dialog
                     </Button>
-                    <Button size="sm" className="h-7 text-xs shadow-sm bg-blue-600 hover:bg-blue-700 text-white font-medium" onClick={addDraftRow}>
+                    <Button size="sm" className="h-7 text-xs shadow-sm bg-[#534AB7] hover:bg-[#7F77DD] text-white font-medium" onClick={addDraftRow}>
                         <Plus className="w-3.5 h-3.5 mr-1" /> New Record
                     </Button>
                 </div>
@@ -767,7 +767,7 @@ export const SpreadsheetGrid = forwardRef<SpreadsheetGridHandle, SpreadsheetGrid
                                                 }}
                                                 className={`p-0 border-r border-slate-200 relative transition-all max-w-[240px] ${
                                                     isSelected
-                                                        ? 'ring-2 ring-blue-600 ring-inset bg-blue-50/60 z-10'
+                                                        ? 'ring-2 ring-[#534AB7] ring-inset bg-[#EEEDFE]/60 z-10'
                                                         : hasError
                                                         ? 'bg-rose-50/60 border-rose-300'
                                                         : ''
@@ -808,9 +808,9 @@ export const SpreadsheetGrid = forwardRef<SpreadsheetGridHandle, SpreadsheetGrid
                             const hasRowErrors = Object.keys(draftRow.errors).length > 0;
 
                             return (
-                                <tr key={draftRow.tempId} className="bg-blue-50/30 border-b border-blue-200 transition-colors animate-in fade-in duration-150">
+                                <tr key={draftRow.tempId} className="bg-[#EEEDFE]/30 border-b border-[#7F77DD]/30 transition-colors animate-in fade-in duration-150">
                                     {/* Sticky Left Plus Badge Cell */}
-                                    <td className="text-center font-bold text-blue-600 border-r border-blue-200 text-[11px] py-1 bg-blue-100/70 sticky left-0 z-10 select-none shadow-sm">
+                                    <td className="text-center font-bold text-[#534AB7] border-r border-[#7F77DD]/30 text-[11px] py-1 bg-[#EEEDFE] sticky left-0 z-10 select-none shadow-sm">
                                         +
                                     </td>
                                     {fields.map((f, cIdx) => {
@@ -826,9 +826,9 @@ export const SpreadsheetGrid = forwardRef<SpreadsheetGridHandle, SpreadsheetGrid
                                                 onDoubleClick={() => {
                                                     startEditing({ rowIndex: rIdx, rowId: draftRow.tempId, colIndex: cIdx, fieldName: f.name, isDraftRow: true });
                                                 }}
-                                                className={`p-0 border-r border-blue-200/60 relative ${
+                                                className={`p-0 border-r border-[#7F77DD]/20 relative ${
                                                     isSelected
-                                                        ? 'ring-2 ring-blue-600 ring-inset bg-blue-50/80 z-10'
+                                                        ? 'ring-2 ring-[#534AB7] ring-inset bg-[#EEEDFE] z-10'
                                                         : hasCellError
                                                         ? 'bg-rose-50 border-rose-300'
                                                         : ''
@@ -839,7 +839,7 @@ export const SpreadsheetGrid = forwardRef<SpreadsheetGridHandle, SpreadsheetGrid
                                         );
                                     })}
                                     {/* Sticky Right Draft Actions */}
-                                    <td className="px-2 py-1 sticky right-0 bg-blue-50/90 backdrop-blur-sm text-right border-l border-blue-200 space-x-1 z-10">
+                                    <td className="px-2 py-1 sticky right-0 bg-[#EEEDFE]/90 backdrop-blur-sm text-right border-l border-[#7F77DD]/30 space-x-1 z-10">
                                         <div className="flex items-center justify-end space-x-1">
                                             {hasRowErrors ? (
                                                 <Button
@@ -856,7 +856,7 @@ export const SpreadsheetGrid = forwardRef<SpreadsheetGridHandle, SpreadsheetGrid
                                             ) : (
                                                 <Button
                                                     size="sm"
-                                                    className="h-6 text-[11px] px-2 bg-blue-600 text-white hover:bg-blue-700 shadow-sm flex items-center gap-1"
+                                                    className="h-6 text-[11px] px-2 bg-[#534AB7] text-white hover:bg-[#7F77DD] shadow-sm flex items-center gap-1"
                                                     onClick={() => saveDraftRow(draftRow.tempId)}
                                                     disabled={draftRow.isSaving || isPending}
                                                     title="Save Row"
@@ -894,7 +894,7 @@ export const SpreadsheetGrid = forwardRef<SpreadsheetGridHandle, SpreadsheetGrid
                 </Button>
                 <div className="text-[11px] text-gray-500 flex items-center space-x-3">
                     {draftNewRows.length > 0 && (
-                        <span className="font-semibold text-blue-600">{draftNewRows.length} unsaved draft row(s) active (auto-saves on fill)</span>
+                        <span className="font-semibold text-[#534AB7]">{draftNewRows.length} unsaved draft row(s) active (auto-saves on fill)</span>
                     )}
                     <span>Showing {records.length} saved records</span>
                 </div>
@@ -955,7 +955,7 @@ export const SpreadsheetGrid = forwardRef<SpreadsheetGridHandle, SpreadsheetGrid
                                 </div>
                                 <div>
                                     <span className="text-gray-500">New Rows Created:</span>{" "}
-                                    <span className="font-bold text-blue-600">{pastePreview.affectedNewCount}</span>
+                                    <span className="font-bold text-[#534AB7]">{pastePreview.affectedNewCount}</span>
                                 </div>
                             </div>
 
@@ -987,7 +987,7 @@ export const SpreadsheetGrid = forwardRef<SpreadsheetGridHandle, SpreadsheetGrid
                             <Button variant="outline" size="sm" onClick={() => setPastePreview(null)} disabled={isApplyingPaste}>
                                 Cancel
                             </Button>
-                            <Button size="sm" className="bg-blue-600 text-white hover:bg-blue-700" onClick={applyPasteData} disabled={isApplyingPaste}>
+                            <Button size="sm" className="bg-[#534AB7] text-white hover:bg-[#7F77DD]" onClick={applyPasteData} disabled={isApplyingPaste}>
                                 {isApplyingPaste ? "Applying Paste..." : "Confirm & Apply Paste"}
                             </Button>
                         </DialogFooter>

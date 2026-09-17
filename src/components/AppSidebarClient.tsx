@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState, useTransition, useEffect, useCallback } from "react";
 import { Button } from "@/components/ui/button";
-import { setEmployeeCookie, createWorkspace } from "@/app/actions/workspaces";
+import { createWorkspace } from "@/app/actions/workspaces";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -40,8 +40,7 @@ export function AppSidebarClient({
     }, [activeWorkspaceId, isOverview]);
 
     const switchEmployee = (empId: string) => {
-        startTransition(async () => {
-            await setEmployeeCookie(empId);
+        startTransition(() => {
             setIsMobileMenuOpen(false);
             router.push("/overview");
         });
@@ -89,25 +88,25 @@ export function AppSidebarClient({
             {/* Sidebar Wrapper */}
             <div className={`
                 fixed md:relative inset-y-0 left-0 z-50 transform transition-transform duration-300 ease-in-out
-                w-72 md:w-64 bg-slate-50 border-r border-slate-200 flex flex-col justify-between shrink-0
+                w-72 md:w-64 bg-[#26215C] border-r border-indigo-950/50 flex flex-col justify-between shrink-0 text-slate-100
                 ${isMobileMenuOpen ? 'translate-x-0 shadow-2xl' : '-translate-x-full md:translate-x-0'}
             `}>
                 {/* Close Button Mobile */}
                 <button
                     onClick={() => setIsMobileMenuOpen(false)}
-                    className="md:hidden absolute top-3 right-3 flex items-center justify-center w-10 h-10 rounded-md text-slate-400 hover:text-slate-900 bg-slate-100 hover:bg-slate-200 focus:outline-none"
+                    className="md:hidden absolute top-3 right-3 flex items-center justify-center w-10 h-10 rounded-md text-indigo-200 hover:text-white bg-indigo-900/60 hover:bg-indigo-800 focus:outline-none"
                     aria-label="Close Menu"
                 >
                     <X className="w-5 h-5" />
                 </button>
 
                 <div className="flex flex-col h-full">
-                    <div className="h-16 flex items-center px-6 shrink-0 border-b border-slate-200/60">
+                    <div className="h-16 flex items-center px-6 shrink-0 border-b border-indigo-950/60">
                         <Link href="/" className="flex items-center space-x-2.5">
-                            <div className="w-7 h-7 bg-blue-600 rounded-md flex items-center justify-center shadow-sm">
+                            <div className="w-7 h-7 bg-[#534AB7] rounded-md flex items-center justify-center shadow-sm">
                                 <Grip className="w-4 h-4 text-white" />
                             </div>
-                            <h2 className="font-bold text-lg text-slate-900 tracking-tight">CRM Desk</h2>
+                            <h2 className="font-bold text-lg text-white tracking-tight">CRM Desk</h2>
                         </Link>
                     </div>
 
@@ -115,10 +114,10 @@ export function AppSidebarClient({
                         {/* Navigation */}
                         <div className="space-y-1">
                             <Link href="/overview" className={`flex items-center px-3 py-2 text-sm font-medium rounded-lg transition-colors ${isOverview
-                                ? 'text-blue-700 bg-blue-50/80 font-semibold'
-                                : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'
+                                ? 'text-[#3C3489] bg-[#EEEDFE] font-semibold shadow-sm'
+                                : 'text-indigo-200/80 hover:bg-[#7F77DD]/20 hover:text-white'
                                 }`}>
-                                <LayoutDashboard className={`w-4 h-4 mr-3 ${isOverview ? 'text-blue-600' : 'text-slate-500'}`} />
+                                <LayoutDashboard className={`w-4 h-4 mr-3 ${isOverview ? 'text-[#534AB7]' : 'text-indigo-300/80'}`} />
                                 Company Overview
                             </Link>
                         </div>
@@ -127,22 +126,22 @@ export function AppSidebarClient({
                             {/* Workspaces */}
                             <div className="space-y-1">
                                 <div className="flex items-center justify-between px-3 pb-1">
-                                    <Label className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Workspaces</Label>
-                                    <button className="text-slate-400 hover:text-blue-600 transition-colors" onClick={() => setIsCreating(true)} title="Create Workspace">
+                                    <Label className="text-[11px] font-semibold text-indigo-300/70 uppercase tracking-wider">Workspaces</Label>
+                                    <button className="text-indigo-300/70 hover:text-white transition-colors" onClick={() => setIsCreating(true)} title="Create Workspace">
                                         <Plus className="w-4 h-4" />
                                     </button>
                                 </div>
 
                                 {myWorkspaces.length === 0 ? (
-                                    <p className="text-xs text-slate-400 px-3 italic">No workspaces yet.</p>
+                                    <p className="text-xs text-indigo-300/50 px-3 italic">No workspaces yet.</p>
                                 ) : (
                                     <nav className="space-y-1">
                                         {myWorkspaces.map(ws => (
                                             <Link key={ws.id} href={`/workspaces/${ws.id}`} className={`flex items-center px-3 py-2 text-sm font-medium rounded-lg transition-colors ${activeWorkspaceId === ws.id
-                                                ? 'text-blue-700 bg-blue-50/80 font-semibold'
-                                                : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'
+                                                ? 'text-[#3C3489] bg-[#EEEDFE] font-semibold shadow-sm'
+                                                : 'text-indigo-200/80 hover:bg-[#7F77DD]/20 hover:text-white'
                                                 }`}>
-                                                <Briefcase className={`w-4 h-4 mr-3 ${activeWorkspaceId === ws.id ? 'text-blue-600' : 'text-slate-400'}`} />
+                                                <Briefcase className={`w-4 h-4 mr-3 ${activeWorkspaceId === ws.id ? 'text-[#534AB7]' : 'text-indigo-300/80'}`} />
                                                 <span className="truncate">{ws.name}</span>
                                             </Link>
                                         ))}
@@ -153,20 +152,30 @@ export function AppSidebarClient({
                     </div>
                 </div>
 
-                {/* Employee Switcher (Footer) */}
-                <div className="p-4 border-t border-gray-200/60 bg-white">
-                    <div className="space-y-2">
-                        <Label className="text-xs text-gray-500 font-semibold px-1 uppercase tracking-wider">Active Profile</Label>
-                        <Select value={currentEmployeeId} onValueChange={(v) => switchEmployee(v || "")} disabled={isPending}>
-                            <SelectTrigger className="h-9 text-sm bg-gray-50/50 border-gray-200">
-                                <SelectValue placeholder="Select Employee" />
-                            </SelectTrigger>
-                            <SelectContent>
-                                {allEmployees.map(e => (
-                                    <SelectItem key={e.id} value={e.id}>{e.name}</SelectItem>
-                                ))}
-                            </SelectContent>
-                        </Select>
+                {/* Employee Profile & Logout (Footer) */}
+                <div className="p-4 border-t border-indigo-950/60 bg-[#1F1B4B]/80">
+                    <div className="space-y-3">
+                        <div className="flex items-center justify-between">
+                            <div className="min-w-0 flex-1 pr-2">
+                                <p className="text-xs font-semibold text-white truncate">
+                                    {allEmployees.find(e => e.id === currentEmployeeId)?.name || "Employee"}
+                                </p>
+                                <span className="inline-block mt-0.5 text-[10px] font-bold px-1.5 py-0.5 rounded bg-[#EEEDFE] text-[#3C3489]">
+                                    {allEmployees.find(e => e.id === currentEmployeeId)?.role || "EMPLOYEE"}
+                                </span>
+                            </div>
+                            <Button
+                                variant="ghost"
+                                size="sm"
+                                className="h-7 text-xs text-indigo-300 hover:text-white hover:bg-indigo-900/60"
+                                onClick={async () => {
+                                    const { logoutUser } = await import("@/app/actions/auth");
+                                    await logoutUser();
+                                }}
+                            >
+                                Sign Out
+                            </Button>
+                        </div>
                     </div>
                 </div>
 

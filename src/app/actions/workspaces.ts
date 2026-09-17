@@ -3,44 +3,26 @@
 import prisma from "@/lib/prisma";
 import { z } from "zod";
 import { revalidatePath } from "next/cache";
-import { cookies } from "next/headers";
-import { redirect } from "next/navigation";
-
-export async function setEmployeeCookie(employeeId: string) {
-    const cookieStore = await cookies();
-    cookieStore.set("current_employee_id", employeeId, { path: '/' });
-    revalidatePath("/");
-}
+import { getSession, requireAuth, requireWorkspaceAccess } from "@/lib/auth";
 
 export async function getCurrentEmployeeId() {
-    const cookieStore = await cookies();
-    const existing = cookieStore.get("current_employee_id")?.value;
+    const session = await getSession();
+    if (session) return session.employeeId;
 
-    if (existing) {
-        // Validate if it actually exists in DB to prevent foreign key constraint issues
-        const emp = await prisma.employee.findUnique({ where: { id: existing } });
-        if (emp) return emp.id;
-    }
+    const firstEmp = await prisma.employee.findFirst({ orderBy: { createdAt: 'asc' } });
+    if (firstEmp) return firstEmp.id;
 
-    // Fallback: Use the very first employee if no valid cookie
-    const firstEmp = await prisma.employee.findFirst({ orderBy: { name: 'asc' } });
-    if (firstEmp) {
-        return firstEmp.id;
-    }
-
-    // Last resort panic fallback, upsert "default_employee" to guarantee FK
     const defaultEmp = await prisma.employee.upsert({
         where: { id: "default_employee" },
         update: {},
-        create: { id: "default_employee", name: "Default Employee" }
+        create: { id: "default_employee", name: "Default Employee", role: "EMPLOYEE" }
     });
     return defaultEmp.id;
 }
 
-export async function createWorkspace(data: { name: string, employeeId?: string }) {
+export async function createWorkspace(data: { name: string }) {
     const schema = z.object({
-        name: z.string().min(1, "Workspace name is required"),
-        employeeId: z.string().optional()
+        name: z.string().min(1, "Workspace name is required")
     });
 
     const parsed = schema.safeParse(data);
@@ -48,13 +30,13 @@ export async function createWorkspace(data: { name: string, employeeId?: string 
         return { success: false, error: parsed.error.issues[0].message };
     }
 
-    const employeeId = parsed.data.employeeId || await getCurrentEmployeeId();
-
     try {
+        const session = await requireAuth();
+
         const workspace = await prisma.workspace.create({
             data: {
-                name: parsed.data.name,
-                employeeId: employeeId,
+                name: parsed.data.name.trim(),
+                employeeId: session.employeeId,
                 fields: {
                     create: [
                         { name: "Name", type: "TEXT", isRequired: true, order: 0 },
@@ -75,39 +57,26 @@ export async function createWorkspace(data: { name: string, employeeId?: string 
 }
 
 export async function renameWorkspace(workspaceId: string, newName: string) {
-    const employeeId = await getCurrentEmployeeId();
-
     try {
-        // verify ownership
-        const workspace = await prisma.workspace.findUnique({ where: { id: workspaceId } });
-        if (!workspace || workspace.employeeId !== employeeId) {
-            return { success: false, error: "Unauthorized or not found." };
-        }
+        await requireWorkspaceAccess(workspaceId);
 
         await prisma.workspace.update({
             where: { id: workspaceId },
-            data: { name: newName }
+            data: { name: newName.trim() }
         });
 
         revalidatePath(`/workspaces/${workspaceId}/settings`);
         revalidatePath("/overview");
         return { success: true };
     } catch (e: any) {
-        return { success: false, error: "Failed to rename workspace." };
+        return { success: false, error: e.message || "Failed to rename workspace." };
     }
 }
 
 export async function deleteWorkspace(workspaceId: string) {
-    const employeeId = await getCurrentEmployeeId();
-
     try {
-        // verify ownership
-        const workspace = await prisma.workspace.findUnique({ where: { id: workspaceId } });
-        if (!workspace || workspace.employeeId !== employeeId) {
-            return { success: false, error: "Unauthorized or not found." };
-        }
+        await requireWorkspaceAccess(workspaceId);
 
-        // Deleting the workspace naturally cascades based on the schema design
         await prisma.workspace.delete({
             where: { id: workspaceId }
         });
@@ -115,6 +84,6 @@ export async function deleteWorkspace(workspaceId: string) {
         revalidatePath("/overview");
         return { success: true };
     } catch (e: any) {
-        return { success: false, error: "Failed to delete workspace." };
+        return { success: false, error: e.message || "Failed to delete workspace." };
     }
 }

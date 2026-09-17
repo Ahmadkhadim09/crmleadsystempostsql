@@ -4,6 +4,7 @@ import { z } from "zod";
 import prisma from "@/lib/prisma";
 import { Prisma } from "@prisma/client";
 import { revalidatePath } from "next/cache";
+import { requireWorkspaceAccess } from "@/lib/auth";
 
 const FieldOptionsSchema = z.array(z.string()).optional().nullable();
 
@@ -29,15 +30,15 @@ const ReorderFieldsSchema = z.object({
 });
 
 export async function createFieldDefinition(data: z.infer<typeof CreateFieldSchema>) {
-    console.log("createFieldDefinition received data:", JSON.stringify(data, null, 2));
     const result = CreateFieldSchema.safeParse(data);
 
     if (!result.success) {
-        console.error("Zod validation failed:", result.error.issues);
         return { success: false, error: "Validation failed: " + JSON.stringify(result.error.issues) };
     }
 
     try {
+        await requireWorkspaceAccess(result.data.workspaceId);
+
         const field = await prisma.fieldDefinition.create({
             data: {
                 workspaceId: result.data.workspaceId,
@@ -52,7 +53,6 @@ export async function createFieldDefinition(data: z.infer<typeof CreateFieldSche
         revalidatePath(`/workspaces/${result.data.workspaceId}/settings`);
         return { success: true, data: field };
     } catch (error: any) {
-        console.error("error creating field:", error);
         return { success: false, error: "Failed to create field: " + (error.message || String(error)) };
     }
 }
@@ -65,6 +65,8 @@ export async function updateFieldDefinition(data: z.infer<typeof UpdateFieldSche
     }
 
     try {
+        await requireWorkspaceAccess(result.data.workspaceId);
+
         const field = await prisma.fieldDefinition.update({
             where: { id: result.data.id },
             data: {
@@ -85,6 +87,8 @@ export async function updateFieldDefinition(data: z.infer<typeof UpdateFieldSche
 
 export async function deleteFieldDefinition(id: string, workspaceId: string) {
     try {
+        await requireWorkspaceAccess(workspaceId);
+
         const field = await prisma.fieldDefinition.delete({
             where: { id }
         });
@@ -104,6 +108,8 @@ export async function reorderFieldDefinitions(data: z.infer<typeof ReorderFields
     }
 
     try {
+        await requireWorkspaceAccess(result.data.workspaceId);
+
         await prisma.$transaction(
             result.data.fields.map(field =>
                 prisma.fieldDefinition.update({
