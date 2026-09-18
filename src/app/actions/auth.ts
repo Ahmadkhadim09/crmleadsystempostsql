@@ -74,7 +74,7 @@ export async function signupEmployee(data: { name: string; email: string; passwo
         return { success: true, workspaceId: workspace.id };
     } catch (e: any) {
         console.error("Signup error:", e);
-        return { success: false, error: "Failed to create account: " + (e.message || String(e)) };
+        return { success: false, error: "Failed to create account. Please try again or contact support." };
     }
 }
 
@@ -131,7 +131,7 @@ export async function loginUser(data: { email: string; password: string }) {
         }
 
         revalidatePath("/");
-        return { success: true, workspaceId: workspace.id };
+        return { success: true, workspaceId: workspace.id, role: employee.role };
     } catch (e: any) {
         console.error("Login error:", e);
         return { success: false, error: "Authentication failed." };

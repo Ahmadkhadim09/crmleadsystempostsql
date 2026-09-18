@@ -6,18 +6,8 @@ import { revalidatePath } from "next/cache";
 import { getSession, requireAuth, requireWorkspaceAccess } from "@/lib/auth";
 
 export async function getCurrentEmployeeId() {
-    const session = await getSession();
-    if (session) return session.employeeId;
-
-    const firstEmp = await prisma.employee.findFirst({ orderBy: { createdAt: 'asc' } });
-    if (firstEmp) return firstEmp.id;
-
-    const defaultEmp = await prisma.employee.upsert({
-        where: { id: "default_employee" },
-        update: {},
-        create: { id: "default_employee", name: "Default Employee", role: "EMPLOYEE" }
-    });
-    return defaultEmp.id;
+    const session = await requireAuth();
+    return session.employeeId;
 }
 
 export async function createWorkspace(data: { name: string }) {

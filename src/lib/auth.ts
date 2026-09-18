@@ -21,9 +21,15 @@ export function hashPassword(password: string): string {
 
 export function verifyPassword(password: string, storedHash: string): boolean {
     if (!storedHash || !storedHash.includes(":")) return false;
-    const [salt, originalHash] = storedHash.split(":");
-    const hashToVerify = crypto.pbkdf2Sync(password, salt, 100000, 64, "sha512").toString("hex");
-    return crypto.timingSafeEqual(Buffer.from(originalHash, "hex"), Buffer.from(hashToVerify, "hex"));
+    try {
+        const [salt, originalHash] = storedHash.split(":");
+        const hashToVerify = crypto.pbkdf2Sync(password, salt, 100000, 64, "sha512").toString("hex");
+        const origBuf = Buffer.from(originalHash, "hex");
+        const verifyBuf = Buffer.from(hashToVerify, "hex");
+        return origBuf.length === verifyBuf.length && crypto.timingSafeEqual(origBuf, verifyBuf);
+    } catch {
+        return false;
+    }
 }
 
 function signToken(payload: string): string {
@@ -39,12 +45,19 @@ function verifyToken(token: string): string | null {
     const payload = token.substring(0, lastDot);
     const signature = token.substring(lastDot + 1);
 
-    const hmac = crypto.createHmac("sha256", SESSION_SECRET);
-    hmac.update(payload);
-    const expectedSignature = hmac.digest("hex");
+    try {
+        const hmac = crypto.createHmac("sha256", SESSION_SECRET);
+        hmac.update(payload);
+        const expectedSignature = hmac.digest("hex");
 
-    if (crypto.timingSafeEqual(Buffer.from(signature, "hex"), Buffer.from(expectedSignature, "hex"))) {
-        return payload;
+        const sigBuf = Buffer.from(signature, "hex");
+        const expBuf = Buffer.from(expectedSignature, "hex");
+
+        if (sigBuf.length === expBuf.length && crypto.timingSafeEqual(sigBuf, expBuf)) {
+            return payload;
+        }
+    } catch {
+        return null;
     }
     return null;
 }
@@ -129,5 +142,13 @@ export async function requireWorkspaceAccess(workspaceId: string): Promise<AuthS
         throw new Error("Unauthorized access to workspace");
     }
 
+    return session;
+}
+
+export async function requireAdmin(): Promise<AuthSession> {
+    const session = await requireAuth();
+    if (session.role !== "ADMIN") {
+        redirect("/overview");
+    }
     return session;
 }

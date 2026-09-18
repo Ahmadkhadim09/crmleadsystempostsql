@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 
-const PUBLIC_PATHS = ['/login', '/signup'];
+const PUBLIC_PATHS = ['/', '/login', '/signup'];
 
 export function proxy(request: NextRequest) {
     const { pathname } = request.nextUrl;
@@ -16,7 +16,7 @@ export function proxy(request: NextRequest) {
         return NextResponse.next();
     }
 
-    const isPublicPath = PUBLIC_PATHS.some(path => pathname === path || pathname.startsWith(path + '/'));
+    const isPublicPath = PUBLIC_PATHS.some(path => pathname === path || (path !== '/' && pathname.startsWith(path + '/')));
     const sessionCookie = request.cookies.get('crm_session')?.value;
 
     if (!sessionCookie && !isPublicPath) {
@@ -24,7 +24,8 @@ export function proxy(request: NextRequest) {
         return NextResponse.redirect(loginUrl);
     }
 
-    if (sessionCookie && isPublicPath) {
+    // Only redirect away from login/signup if already logged in (leave root '/' to be handled by app/page.tsx)
+    if (sessionCookie && (pathname === '/login' || pathname === '/signup')) {
         const overviewUrl = new URL('/overview', request.url);
         return NextResponse.redirect(overviewUrl);
     }
